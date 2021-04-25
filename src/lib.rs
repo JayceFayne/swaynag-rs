@@ -218,7 +218,7 @@ impl Swaynag {
     }
 
     pub fn button_padding(mut self, button_padding: impl Into<CowString>) -> Self {
-        self.arg("--button_padding");
+        self.arg("--button-padding");
         self.arg(button_padding);
         self
     }
