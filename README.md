@@ -18,7 +18,7 @@ features = ["async"]
 
 ## Usage
 
-Examples of how to use the library can be found [here](src/test.rs).
+Examples of how to use the library can be found [here](src/tests.rs).
 
 ## Versioning
 
