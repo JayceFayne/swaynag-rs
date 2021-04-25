@@ -2,10 +2,10 @@
 
 [Version Badge]: https://img.shields.io/crates/v/swaynag.svg
 [crates.io]: https://crates.io/crates/swaynag
-[Action Badge]: https://github.com/JayceFayne/swaynag/workflows/Rust/badge.svg
-[actions]: https://github.com/JayceFayne/swaynag/actions
+[Action Badge]: https://github.com/JayceFayne/swaynag-rs/workflows/Rust/badge.svg
+[actions]: https://github.com/JayceFayne/swaynag-rs/actions
 [License Badge]: https://img.shields.io/crates/l/swaynag.svg
-[license]: https://github.com/JayceFayne/swaynag/blob/master/LICENSE.md
+[license]: https://github.com/JayceFayne/swaynag-rs/blob/master/LICENSE.md
 
 A simple wrapper around [swaynag](https://github.com/swaywm/sway/blob/master/swaynag/swaynag.1.scd).
 This library can be used  in either a synchronous or asynchronous manner.
