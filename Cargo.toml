@@ -1,6 +1,6 @@
 [package]
 name = "swaynag"
-version = "0.1.1"
+version = "0.2.0"
 authors = ["Jayce Fayne <jayce.fayne@mailbox.org>"]
 edition = "2018"
 description = "A simple wrapper around swaynag"
