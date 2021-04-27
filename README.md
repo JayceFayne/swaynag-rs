@@ -9,7 +9,7 @@
 
 A simple wrapper around [swaynag](https://github.com/swaywm/sway/blob/master/swaynag/swaynag.1.scd).
 This library can be used  in either a synchronous or asynchronous manner.
-The async feature can be enabled be adding the following to your Cargo.toml:
+The async feature can be enabled by adding the following to your Cargo.toml:
 
 ```toml
 [dependencies.swaynag]
