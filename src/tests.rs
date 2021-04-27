@@ -1,15 +1,15 @@
-use crate::{Button, Edge, Swaynag};
+use crate::Swaynag;
 
 #[cfg(not(feature = "async"))]
 #[test]
 fn spwan() {
     let mut child = Swaynag::new("swaynag test from rust")
         .detailed_message("interesting details")
-        .button(Button::detailed("show me more"))
-        .button(Button::simple("simple", "false"))
-        .button(Button::dismiss("go away", "true"))
-        .button(Button::override_default_dismiss("Y"))
-        .edge(Edge::Bottom)
+        .details_button("show me more")
+        .button("simple", "false")
+        .dismiss_button("go away", "true")
+        .override_default_dismiss_button("Y")
+        .display_on_bottom_edge()
         .spawn()
         .unwrap();
     child.wait().unwrap();
@@ -17,15 +17,15 @@ fn spwan() {
 
 #[cfg(feature = "async")]
 #[test]
-fn spwan_async() {
+fn spwan() {
     async_io::block_on(async {
         let mut child = Swaynag::new("swaynag test from rust")
             .detailed_message("interesting details")
-            .button(Button::detailed("show me more"))
-            .button(Button::simple("simple", "false"))
-            .button(Button::dismiss("go away", "true"))
-            .button(Button::override_default_dismiss("Y"))
-            .edge(Edge::Bottom)
+            .details_button("show me more")
+            .button("simple", "false")
+            .dismiss_button("go away", "true")
+            .override_default_dismiss_button("Y")
+            .display_on_bottom_edge()
             .spawn()
             .await
             .unwrap();

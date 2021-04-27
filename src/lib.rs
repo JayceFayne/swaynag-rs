@@ -15,68 +15,6 @@ mod tests;
 type CowString = Cow<'static, str>;
 
 #[derive(Debug)]
-pub struct Button {
-    button_type: CowString,
-    text: CowString,
-    action: Option<CowString>,
-}
-
-impl Button {
-    fn new(
-        button_type: impl Into<CowString>,
-        text: impl Into<CowString>,
-        action: Option<CowString>,
-    ) -> Self {
-        let button_type = button_type.into();
-        let text = text.into();
-        Self {
-            button_type,
-            text,
-            action,
-        }
-    }
-
-    pub fn simple(text: impl Into<CowString>, action: impl Into<CowString>) -> Self {
-        Button::new("-b", text, Some(action.into()))
-    }
-
-    pub fn simple_no_terminal(text: impl Into<CowString>, action: impl Into<CowString>) -> Self {
-        Button::new("-B", text, Some(action.into()))
-    }
-
-    pub fn dismiss(text: impl Into<CowString>, action: impl Into<CowString>) -> Self {
-        Button::new("-z", text, Some(action.into()))
-    }
-
-    pub fn dismiss_no_terminal(text: impl Into<CowString>, action: impl Into<CowString>) -> Self {
-        Button::new("-Z", text, Some(action.into()))
-    }
-
-    pub fn override_default_dismiss(text: impl Into<CowString>) -> Self {
-        Button::new("-s", text, None)
-    }
-
-    pub fn detailed(text: impl Into<CowString>) -> Self {
-        Button::new("-L", text, None)
-    }
-}
-
-#[derive(Debug)]
-pub enum Edge {
-    Top,
-    Bottom,
-}
-
-impl From<Edge> for CowString {
-    fn from(e: Edge) -> Self {
-        Cow::Borrowed(match e {
-            Edge::Top => "top",
-            Edge::Bottom => "bottom",
-        })
-    }
-}
-
-#[derive(Debug)]
 pub struct Swaynag {
     message: CowString,
     detailed_message: Option<CowString>,
@@ -109,8 +47,12 @@ impl Swaynag {
         self
     }
 
-    pub fn edge(&mut self, edge: Edge) -> &mut Self {
-        self.arg("-e").arg(edge)
+    pub fn display_on_bottom_edge(&mut self) -> &mut Self {
+        self.arg("-e").arg("bottom")
+    }
+
+    pub fn display_on_top_edge(&mut self) -> &mut Self {
+        self.arg("-e").arg("top")
     }
 
     pub fn font(&mut self, font: impl Into<CowString>) -> &mut Self {
@@ -187,25 +129,42 @@ impl Swaynag {
 
     pub fn button(
         &mut self,
-        Button {
-            button_type,
-            text,
-            action,
-        }: Button,
+        text: impl Into<CowString>,
+        action: impl Into<CowString>,
     ) -> &mut Self {
-        self.args.push(button_type);
-        self.args.push(text);
-        if let Some(action) = action {
-            self.args.push(action);
-        }
-        self
+        self.arg("-b").arg(text).arg(action)
     }
 
-    pub fn buttons(&mut self, buttons: impl IntoIterator<Item = Button>) -> &mut Self {
-        for button in buttons {
-            self.button(button);
-        }
-        self
+    pub fn button_no_terminal(
+        &mut self,
+        text: impl Into<CowString>,
+        action: impl Into<CowString>,
+    ) -> &mut Self {
+        self.arg("-B").arg(text).arg(action)
+    }
+
+    pub fn dismiss_button(
+        &mut self,
+        text: impl Into<CowString>,
+        action: impl Into<CowString>,
+    ) -> &mut Self {
+        self.arg("-z").arg(text).arg(action)
+    }
+
+    pub fn dismiss_button_no_terminal(
+        &mut self,
+        text: impl Into<CowString>,
+        action: impl Into<CowString>,
+    ) -> &mut Self {
+        self.arg("-Z").arg(text).arg(action)
+    }
+
+    pub fn override_default_dismiss_button(&mut self, text: impl Into<CowString>) -> &mut Self {
+        self.arg("-s").arg(text)
+    }
+
+    pub fn details_button(&mut self, text: impl Into<CowString>) -> &mut Self {
+        self.arg("-L").arg(text)
     }
 
     fn spawn_child(&self) -> Result<Child> {
