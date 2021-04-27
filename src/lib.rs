@@ -2,8 +2,8 @@
 #![deny(rust_2018_idioms)]
 
 use std::borrow::Cow;
-use std::io::Result;
-use std::process::{Child, Command, Stdio};
+use std::io::Error;
+use std::process::{Child as ChildProcess, Command, Stdio};
 
 #[cfg(feature = "async")]
 mod spawn_async;
@@ -12,12 +12,11 @@ mod spawn_blocking;
 #[cfg(test)]
 mod tests;
 
-type CowString = Cow<'static, str>;
+pub(crate) type CowString = Cow<'static, str>;
 
 #[derive(Debug)]
 pub struct Swaynag {
     message: CowString,
-    detailed_message: Option<CowString>,
     terminal: Option<CowString>,
     args: Vec<CowString>,
 }
@@ -26,7 +25,6 @@ impl Swaynag {
     pub fn new(message: impl Into<CowString>) -> Self {
         Self {
             message: message.into(),
-            detailed_message: None,
             terminal: None,
             args: Vec::new(),
         }
@@ -34,11 +32,6 @@ impl Swaynag {
 
     pub fn terminal(&mut self, terminal: impl Into<CowString>) -> &mut Self {
         self.terminal = Some(terminal.into());
-        self
-    }
-
-    pub fn detailed_message(&mut self, detailed_message: impl Into<CowString>) -> &mut Self {
-        self.detailed_message = Some(detailed_message.into());
         self
     }
 
@@ -166,20 +159,28 @@ impl Swaynag {
     pub fn details_button(&mut self, text: impl Into<CowString>) -> &mut Self {
         self.arg("-L").arg(text)
     }
+}
 
-    fn spawn_child(&self) -> Result<Child> {
+impl From<&Swaynag> for Command {
+    fn from(swaynag: &Swaynag) -> Self {
         let mut cmd = Command::new("swaynag");
-        if let Some(ref terminal) = self.terminal {
+        if let Some(ref terminal) = swaynag.terminal {
             cmd.env("TERMINAL", terminal.as_ref());
-        }
-        if self.detailed_message.is_some() {
-            cmd.arg("-l").stdin(Stdio::piped());
         }
         cmd.stdout(Stdio::null())
             .stderr(Stdio::null())
             .arg("-m")
-            .arg(self.message.as_ref())
-            .args(self.args.iter().map(|a| a.as_ref()))
-            .spawn()
+            .arg(swaynag.message.as_ref())
+            .args(swaynag.args.iter().map(|a| a.as_ref()));
+        cmd
+    }
+}
+
+#[derive(Debug)]
+pub struct Child(ChildProcess);
+
+impl Child {
+    pub fn kill(&mut self) -> Result<(), Error> {
+        self.0.kill()
     }
 }
